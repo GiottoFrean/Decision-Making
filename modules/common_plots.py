@@ -9,8 +9,26 @@ def set_basic_layout(fig):
 	fig.update_layout(margin=dict(t=10,l=10,b=10,r=10))
 	return fig
 
+def plot_1D_Gaussian(mean,sigma):
+	left = mean-sigma*3
+	right = mean+sigma*3
+	X = np.linspace(left,right,300)
+	fig = go.Figure()
+	pdf = (1/(np.sqrt(2*np.pi)*sigma))*np.exp(-(1/sigma**2)*(X-mean)**2)
+	fig.add_trace(go.Scatter(x=X, 
+							 y=pdf,
+							 mode="lines", 
+							 showlegend=False,
+							 line=dict(color="crimson",width=3)))
+
+	fig.update_layout(xaxis_title="X",yaxis_title="pdf")				 
+	fig = set_basic_layout(fig)
+	return fig
+
 def plot_1D_MoG(means,sigmas,weights):
-	lefts = means-np.array(sigmas)*3
+	assert np.isclose(np.sum(weights),1), "mixing weights must sum to 1"
+		
+	lefts = np.array(means)-np.array(sigmas)*3
 	rights = np.array(means)+np.array(sigmas)*3
 	X = np.linspace(np.min(lefts),np.max(rights),300)
 	total_prob = np.zeros(len(X))
