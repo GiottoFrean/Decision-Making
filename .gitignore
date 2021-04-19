@@ -1,4 +1,5 @@
 *.pdf
 .ipynb_checkpoints/
 */__pycache__/
+*.html
 strfn_calc/partitioned_data/
