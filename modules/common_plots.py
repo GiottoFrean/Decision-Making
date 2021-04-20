@@ -7,6 +7,7 @@ def set_basic_layout(fig):
 	fig.update_yaxes(gridcolor="gray",zeroline=False)
 	fig.update_yaxes(ticks="inside",tickwidth=3,ticklen=5,tickcolor="firebrick")
 	fig.update_layout(margin=dict(t=10,l=10,b=10,r=10))
+	fig.update_layout(font=dict(family="Times",size=18))
 	return fig
 
 def plot_1D_Gaussian(mean,sigma):
@@ -27,7 +28,6 @@ def plot_1D_Gaussian(mean,sigma):
 
 def plot_1D_MoG(means,sigmas,weights):
 	assert np.isclose(np.sum(weights),1), "mixing weights must sum to 1"
-		
 	lefts = np.array(means)-np.array(sigmas)*3
 	rights = np.array(means)+np.array(sigmas)*3
 	X = np.linspace(np.min(lefts),np.max(rights),300)
@@ -53,14 +53,14 @@ def plot_1D_MoG(means,sigmas,weights):
 	fig = set_basic_layout(fig)
 	return fig
 	
-def plot_binomial(p,n):
+def plot_binomial(theta,n):
 	k = np.arange(n)
 	n_choose_k = np.math.factorial(n)/np.array([np.math.factorial(k_i)*np.math.factorial(n-k_i) for k_i in k])
-	prob_k = n_choose_k * p**k * (1-p)**(n-k)
+	prob_k = n_choose_k * theta**k * (1-theta)**(n-k)
 	fig = go.Figure()
 	fig.add_trace(go.Scatter(x=k, 
 							 y=prob_k,
-							 name="binomial distribution: n="+str(n) + " p=" + str(p), 
+							 name="n={} theta={}".format(n,theta), 
 							 mode="lines+markers", 
 							 showlegend=True,
 							 line=dict(width=2),
@@ -69,3 +69,23 @@ def plot_binomial(p,n):
 	fig = set_basic_layout(fig)
 	fig.update_xaxes(tickmode="auto",nticks=min(n,15))
 	return fig
+	
+def add_line(fig,X,Y,name):
+	fig.add_trace(go.Scatter(x=X, 
+							 y=Y,
+							 name=name, 
+							 mode="lines", 
+							 showlegend=True,
+							 line=dict(width=2)))
+	return fig
+	
+def add_scatter(fig,X,Y,name):
+	fig.add_trace(go.Scatter(x=X, 
+							 y=Y,
+							 name=name, 
+							 mode="markers", 
+							 showlegend=True,
+							 marker=dict(size=5)))
+	return fig
+
+
