@@ -46,6 +46,7 @@ def condition(factor,axis="none"):
 	if(axis=="none"):
 		new_factor = Factor(names,array.shape)
 		new_factor.set_all(array/np.sum(array))
+		return new_factor
 	else:
 		cond_var_index = [a for a in range(len(names)) if names[a] in axis]
 		if(len(cond_var_index)<1):
@@ -94,7 +95,7 @@ def product(factor1,factor2):
 		new_factor.set(i,factor1.get(f1_part)*factor2.get(f2_part))
 	return new_factor
 
-def cut_variables(factor,axis,values):
+def drop_variables(factor,axis,values):
 	array = factor.array
 	indexes = factor.indexes
 	names = factor.names
