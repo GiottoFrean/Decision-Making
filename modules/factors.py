@@ -70,7 +70,6 @@ def marginalize(factor,axis="none"):
 	else:
 		marg_var_index = [a for a in np.arange(len(names)) if names[a] in axis]
 		if(len(marg_var_index)<1):
-			print("Error: couldn't find variable")
 			return None
 		else:
 			not_marg_var_index = [b for b in range(len(names)) if not b in marg_var_index]
@@ -79,7 +78,7 @@ def marginalize(factor,axis="none"):
 			new_factor = Factor(new_names,summed_array.shape)
 			new_factor.set_all(summed_array)
 			return new_factor
-	
+
 def product(factor1,factor2):
 	names1 = factor1.names
 	names2 = factor2.names
@@ -95,27 +94,31 @@ def product(factor1,factor2):
 		new_factor.set(i,factor1.get(f1_part)*factor2.get(f2_part))
 	return new_factor
 
+def multiple_factor_product(all_factors):
+	joint_factor = all_factors[0]
+	for i in range(1,len(all_factors)):
+		joint_factor = product(joint_factor,all_factors[i])
+	return joint_factor
+
 def drop_variables(factor,axis,values):
 	array = factor.array
 	indexes = factor.indexes
 	names = factor.names
-	if(len(axis)==len(factor.names)):
+	var_index = [a for a in np.arange(len(names)) if names[a] in axis]
+	if(len(var_index)<1):
+		return factor
+	elif(len(var_index)==len(names)):
 		return None
 	else:
-		var_index = [a for a in np.arange(len(names)) if names[a] in axis]
-		if(len(var_index)<1):
-			print("Error: couldn't find variable")
-			return None
-		else:
-			not_var_index = [b for b in range(len(names)) if not b in var_index]
-			slc = [slice(None)]*len(names)
-			for v_i in range(len(var_index)):
-				slc[var_index[v_i]]=slice(values[v_i],values[v_i]+1)
-			sliced_array = np.squeeze(array[tuple(slc)])
-			new_names = [names[n] for n in not_var_index]
-			new_factor = Factor(new_names,sliced_array.shape)
-			new_factor.set_all(sliced_array) # squeeze removes all axes with 1 dim.
-			return new_factor
+		not_var_index = [b for b in range(len(names)) if not b in var_index]
+		slc = [slice(None)]*len(names)
+		for v_i in range(len(var_index)):
+			slc[var_index[v_i]]=slice(values[v_i],values[v_i]+1)
+		sliced_array = np.squeeze(array[tuple(slc)])
+		new_names = [names[n] for n in not_var_index]
+		new_factor = Factor(new_names,sliced_array.shape)
+		new_factor.set_all(sliced_array) # squeeze removes all axes with 1 dim.
+		return new_factor
 
 
 
