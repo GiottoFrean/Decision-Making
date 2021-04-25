@@ -70,22 +70,3 @@ def plot_binomial(theta,n):
 	fig.update_xaxes(tickmode="auto",nticks=min(n,15))
 	return fig
 	
-def add_line(fig,X,Y,name):
-	fig.add_trace(go.Scatter(x=X, 
-							 y=Y,
-							 name=name, 
-							 mode="lines", 
-							 showlegend=True,
-							 line=dict(width=2)))
-	return fig
-	
-def add_scatter(fig,X,Y,name):
-	fig.add_trace(go.Scatter(x=X, 
-							 y=Y,
-							 name=name, 
-							 mode="markers", 
-							 showlegend=True,
-							 marker=dict(size=5)))
-	return fig
-
-
