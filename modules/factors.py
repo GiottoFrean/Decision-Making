@@ -66,7 +66,7 @@ def condition(factor,axis="none"):
 	indexes = factor.indexes
 	names = factor.names
 	# if axis is none, then normalize the whole array so the total probability is 1.
-	if(axis=="none"):
+	if(axis=="none" or len(axis)==0):
 		new_factor = Factor(names,array.shape)
 		new_factor.set_all(array/np.sum(array))
 		return new_factor
