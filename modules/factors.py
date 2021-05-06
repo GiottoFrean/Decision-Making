@@ -152,7 +152,7 @@ def drop_variables(factor,axis,values):
 		not_var_index = [b for b in range(len(names)) if not b in var_index]
 		slc = [slice(None)]*len(names)
 		for v_i in range(len(var_index)):
-			slc[var_index[v_i]]=slice(values[v_i],values[v_i]+1)
+			slc[var_index[v_i]]=slice(values[axis.index(names[var_index[v_i]])],values[axis.index(names[var_index[v_i]])]+1)
 		sliced_array = np.squeeze(array[tuple(slc)])
 		new_names = [names[n] for n in not_var_index]
 		new_factor = Factor(new_names,sliced_array.shape)
