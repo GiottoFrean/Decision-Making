@@ -69,4 +69,50 @@ def plot_binomial(theta,n):
 	fig = set_basic_layout(fig)
 	fig.update_xaxes(tickmode="auto",nticks=min(n,15))
 	return fig
-	
+
+def plot_2D_Gaussian_Contour(mean,cov):	
+	def gaussian_pdf(x,mean,cov,prec=None):
+		if(prec==None):
+		    prec = np.linalg.inv(cov)
+		norm = (np.sqrt(2*np.pi)**(len(mean)))*np.sqrt(np.linalg.det(cov))
+		x_dif = (x-mean).reshape(x.shape[0],len(mean))
+		exponent = np.exp(-0.5*np.sum(x_dif.dot(prec)*x_dif,axis=1))
+		return exponent/norm
+
+	std = np.sqrt(np.sum(cov,axis=0))
+	grid_size=100
+	grid_lower_lim = mean-std*3
+	grid_upper_lim = mean+std*3
+	steps = std*6/grid_size
+	grid = np.mgrid[grid_lower_lim[0]:grid_upper_lim[0]:steps[0],grid_lower_lim[1]:grid_upper_lim[1]:steps[1]]
+	grid = grid.reshape(2,-1).T
+	z = gaussian_pdf(grid,mean,cov)
+	x = np.linspace(grid_lower_lim[0],grid_upper_lim[0],grid_size)
+	y = np.linspace(grid_lower_lim[1],grid_upper_lim[1],grid_size)
+	fig = go.Figure()
+	fig.add_trace(go.Contour(
+			z=z.reshape(grid_size,grid_size),
+			x=x,
+			y=y,
+			colorscale="hot",
+			showscale=True))
+	fig = set_basic_layout(fig)
+	fig.update_layout(font=dict(size=16))
+	return fig
+
+def plot_2D_Hist(samples,nbins):
+	std = np.std(samples,axis=0)
+	fig = go.Figure()
+	fig.add_trace(go.Histogram2d(
+		    x=samples[:,0],
+		    y=samples[:,1],
+		    xbins=dict(size=std[0]*6/nbins),
+		    ybins=dict(size=std[1]*6/nbins),
+		    colorscale="hot",
+		    showscale=True))
+
+	fig = set_basic_layout(fig)
+	return fig
+
+
+
