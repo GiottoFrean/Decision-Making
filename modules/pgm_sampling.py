@@ -110,4 +110,5 @@ def gibbs_sampling(all_factors,known_vars,evidence,N):
     for n in range(N):
         current_state = gibbs_step(all_variable_markov_blankets,known_vars,all_names,current_state)
         all_visited_states.append(current_state.copy())
-    return np.array(all_visited_states)
+    return all_names,np.array(all_visited_states)
+    

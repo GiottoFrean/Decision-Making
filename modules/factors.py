@@ -56,6 +56,16 @@ class Factor:
 	# just sets all the values in the same order as printed. Useful when testing and doing things in as few lines as possible. 
 	def set_all(self,values):
 		self.array = np.array(values).reshape(self.array.shape,order="C")
+	
+	# returns an empty factor with the same names etc.
+	def copy_zeros(self):
+		new_factor = Factor(self.names,list(self.array.shape))
+		return new_factor
+	
+	def copy(self):
+		new_factor = Factor(self.names,list(self.array.shape))
+		new_factor.set_all(self.array.reshape(-1))
+		return new_factor
 		
 # There are four major pieces of code to know:
 
