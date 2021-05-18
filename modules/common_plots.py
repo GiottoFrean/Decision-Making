@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
 import numpy as np
+from math import gamma
 
 def set_basic_layout(fig):
 	fig.update_xaxes(gridcolor="gray",zeroline=False)
@@ -68,6 +69,23 @@ def plot_binomial(theta,n):
 	fig.update_layout(xaxis_title="X",yaxis_title="pmf")				 
 	fig = set_basic_layout(fig)
 	fig.update_xaxes(tickmode="auto",nticks=min(n,15))
+	return fig
+	
+def plot_beta_model(alpha,beta):
+	x = np.linspace(0,1,100)
+	unnorm_prob = x**(alpha-1)*(1-x)**(beta-1)
+	norm_prob = unnorm_prob/((gamma(alpha)*gamma(beta))/gamma(alpha+beta))
+	fig = go.Figure()
+	fig.add_trace(go.Scatter(x=x, 
+							 y=norm_prob,
+							 name="alpha={} beta={}".format(alpha,beta), 
+							 mode="lines+markers", 
+							 showlegend=True,
+							 line=dict(width=2),
+							 marker=dict(size=5)))
+	fig.update_layout(xaxis_title="X",yaxis_title="pdf")				 
+	fig = set_basic_layout(fig)
+	fig.update_xaxes(tickmode="auto",nticks=10)
 	return fig
 
 def plot_2D_Gaussian_Contour(mean,cov):	
