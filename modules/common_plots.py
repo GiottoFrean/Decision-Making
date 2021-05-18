@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 import numpy as np
 from math import gamma
+import plotly.figure_factory as ff
 
 def set_basic_layout(fig):
 	fig.update_xaxes(gridcolor="gray",zeroline=False)
@@ -86,6 +87,34 @@ def plot_beta_model(alpha,beta):
 	fig.update_layout(xaxis_title="X",yaxis_title="pdf")				 
 	fig = set_basic_layout(fig)
 	fig.update_xaxes(tickmode="auto",nticks=10)
+	return fig
+
+def plot_3D_dirichlet(alphas):
+	def dirichlet_pdf(thetas,alphas):
+		norm = gamma(np.sum(alphas))/np.prod([gamma(a) for a in alphas])
+		prob = norm*np.prod(thetas**(alphas-1))
+		return prob
+    
+	s = 40
+	t1 = []
+	t2 = []
+	for i in range(s):
+		t1=list(np.arange(i))+t1
+		t2=list(np.arange(i)[::-1])+t2
+	t1 = np.array(t1)
+	t2 = np.array(t2)
+	t3 = s-t1-t2-2
+	t1 = t1/(s-2)
+	t2 = t2/(s-2)
+	t3 = t3/(s-2)
+	pdf = [dirichlet_pdf(np.array([t1[i],t2[i],t3[i]]),alphas) for i in range(len(t1))]
+	fig = ff.create_ternary_contour(np.array([t1,t2,t3]), np.array(pdf),
+		                            pole_labels=['theta1', 'theta2', 'theta3'],
+		                            interp_mode='cartesian',
+		                            ncontours=20,
+                                	colorscale='Viridis')
+	fig = set_basic_layout(fig)
+	fig.update_layout(margin=dict(t=75,l=75,b=75,r=75))
 	return fig
 
 def plot_2D_Gaussian_Contour(mean,cov):	
