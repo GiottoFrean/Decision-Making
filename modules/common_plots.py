@@ -89,25 +89,31 @@ def plot_beta_model(alpha,beta):
 	fig.update_xaxes(tickmode="auto",nticks=10)
 	return fig
 
-def plot_3D_dirichlet(alphas):
+def plot_3D_dirichlet(alpha_values):
 	def dirichlet_pdf(thetas,alphas):
 		norm = gamma(np.sum(alphas))/np.prod([gamma(a) for a in alphas])
-		prob = norm*np.prod(thetas**(alphas-1))
-		return prob
+		if(np.isclose(np.sum(alphas),len(alphas))):
+			return np.ones(thetas.shape[0])*norm
+		else:
+			log_prob = np.log(norm)+np.sum((alphas-1)*np.log(thetas),axis=1)
+			return np.exp(log_prob)
     
-	s = 40
+	s = 30
 	t1 = []
 	t2 = []
 	for i in range(s):
-		t1=list(np.arange(i))+t1
-		t2=list(np.arange(i)[::-1])+t2
+		t1=list(np.arange(i).astype(float))+t1
+		t2=list(np.arange(i).astype(float)[::-1])+t2
 	t1 = np.array(t1)
 	t2 = np.array(t2)
 	t3 = s-t1-t2-2
 	t1 = t1/(s-2)
 	t2 = t2/(s-2)
 	t3 = t3/(s-2)
-	pdf = [dirichlet_pdf(np.array([t1[i],t2[i],t3[i]]),alphas) for i in range(len(t1))]
+	t1[t1==0]+=0.0001
+	t2[t2==0]+=0.0001
+	t3[t3==0]+=0.0001
+	pdf = dirichlet_pdf(np.concatenate([t1.reshape(-1,1),t2.reshape(-1,1),t3.reshape(-1,1)],axis=1),alpha_values)
 	fig = ff.create_ternary_contour(np.array([t1,t2,t3]), np.array(pdf),
 		                            pole_labels=['theta1', 'theta2', 'theta3'],
 		                            interp_mode='cartesian',
@@ -115,6 +121,17 @@ def plot_3D_dirichlet(alphas):
                                 	colorscale='Viridis')
 	fig = set_basic_layout(fig)
 	fig.update_layout(margin=dict(t=75,l=75,b=75,r=75))
+	return fig
+
+def plot_simple_contour(x,y,z,cmap="Viridis"):
+	fig = go.Figure()
+	fig.add_trace(go.Contour(
+			z=z,
+			x=x,
+			y=y,
+			colorscale=cmap,
+			showscale=True))
+	fig = set_basic_layout(fig)
 	return fig
 
 def plot_2D_Gaussian_Contour(mean,cov):	
@@ -136,15 +153,7 @@ def plot_2D_Gaussian_Contour(mean,cov):
 	z = gaussian_pdf(grid,mean,cov)
 	x = np.linspace(grid_lower_lim[0],grid_upper_lim[0],grid_size)
 	y = np.linspace(grid_lower_lim[1],grid_upper_lim[1],grid_size)
-	fig = go.Figure()
-	fig.add_trace(go.Contour(
-			z=z.reshape(grid_size,grid_size),
-			x=x,
-			y=y,
-			colorscale="hot",
-			showscale=True))
-	fig = set_basic_layout(fig)
-	fig.update_layout(font=dict(size=16))
+	fig = plot_simple_contour(x,y,z.reshape(grid_size,grid_size),"hot")
 	return fig
 
 def plot_2D_Hist(samples,nbins):
@@ -160,6 +169,3 @@ def plot_2D_Hist(samples,nbins):
 
 	fig = set_basic_layout(fig)
 	return fig
-
-
-
