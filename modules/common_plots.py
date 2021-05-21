@@ -156,14 +156,22 @@ def plot_2D_Gaussian_Contour(mean,cov):
 	fig = plot_simple_contour(x,y,z.reshape(grid_size,grid_size),"hot")
 	return fig
 
-def plot_2D_Hist(samples,nbins):
+def plot_2D_Hist(samples,nbins,xlims=None,ylims=None):
 	std = np.std(samples,axis=0)
 	fig = go.Figure()
+	if(xlims==None):
+		xbin_dict = dict(size=std[0]*6/nbins)
+	else:
+		xbin_dict = dict(start=xlims[0],end=xlims[1],size=(xlims[1]-xlims[0])/nbins)
+	if(ylims==None):
+		ybin_dict = dict(size=std[1]*6/nbins)
+	else:
+		ybin_dict = dict(start=ylims[0],end=ylims[1],size=(ylims[1]-ylims[0])/nbins)
 	fig.add_trace(go.Histogram2d(
 		    x=samples[:,0],
 		    y=samples[:,1],
-		    xbins=dict(size=std[0]*6/nbins),
-		    ybins=dict(size=std[1]*6/nbins),
+		    xbins=xbin_dict,
+		    ybins=ybin_dict,
 		    colorscale="hot",
 		    showscale=True))
 
