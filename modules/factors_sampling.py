@@ -1,5 +1,5 @@
-import numpy as np
 import factors
+import numpy as np
 
 # Samples by setting the variables in order from top to bottom. Requires a directed factor graph. This is probably not going to work for an undirected graph.
 def joint_sample_top_down(all_factors):
