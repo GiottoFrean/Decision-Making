@@ -153,8 +153,39 @@ class Maze:
         self.world = world
         self.policy_matrix = np.nan
         self.initial_state = get_position_index(starting_position)
+        
+    def print_to_size(array,size):
+        last_row_sizes = np.array([len(v) for v in array[:,-1]])
+        max_last_row_size = np.max(last_row_sizes)
+        all_rows_str = ""
+        for r in range(array.shape[0]):
+            row = array[r]
+            if(r>0):
+                row_str = " ["
+            else:
+                row_str = "[["
+            for e in range(len(row)):
+                gap = size
+                if(e==len(row)-1):
+                    gap=max_last_row_size
+                element_str = str(row[e])
+                dif = gap-len(element_str)
+                element_str = "".join([element_str]+[" " for space in range(dif)])
+                row_str=row_str+element_str
+            if(r<array.shape[0]-1):
+                row_str=row_str+" ] \n"
+            else:
+                row_str=row_str+" ]]"
+            all_rows_str=all_rows_str+row_str
+        return all_rows_str
     
-    def make_policy(self,policy_vals):        
+    def __repr__(self):
+        size = len(str(np.max(self.state_map)))+1
+        world_str = Maze.print_to_size(self.world.astype(str),size)
+        state_str = Maze.print_to_size(np.char.replace(self.state_map.astype(str),"-1","W"),size).replace("W"," ")
+        return world_str + " world map" "\n" + state_str + " state map"
+    
+    def get_policy_matrix(self,policy_vals):        
         policy_matrix = np.zeros_like(self.left_transition_matrix)
         for p in range(len(policy_vals)):
             state_p_policy = policy_vals[p]
@@ -170,31 +201,19 @@ class Maze:
         policy_map = self.world.copy()
         for row in range(policy_map.shape[0]):
             for col in range(policy_map.shape[1]):
-                if(policy_map[row,col]=='W'):
-                    policy_map[row,col] = ' '
                 if(self.state_map[row,col]!=-1):
                     policy_map[row,col] = policy_vals[self.state_map[row,col]]
+                else:
+                    policy_map[row,col] = "W"
         
-        self.policy_matrix = policy_matrix
-        self.policy_map = policy_map
-
-    def print_statemap(self):
-        str_map = self.state_map.astype(str)
-        for row in range(self.state_map.shape[0]):
-            for col in range(self.state_map.shape[1]):
-                if(len(str_map[row,col])==1):
-                    str_map[row,col] = " "+str_map[row,col]
-        print(np.array2string(self.state_map, separator='  ', formatter={'str_kind': lambda x: x}),"state map")
+        size = len(str(np.max(self.state_map)))+1
+        policy_map_str = Maze.print_to_size(policy_map.astype(str),size)
+        policy_map_str = policy_map_str.replace("W"," ")
+        print(policy_map_str+" policy map")
+        return policy_matrix
     
-    def print_policy_map(self):
-        print(self.policy_map,"policy map")
-    
-    def print_world(self):
-        print(self.world,"world map")
-    
-    def sample_policy(self,steps):
-        if(not np.isnan(self.policy_matrix).any()):
-            transition_matrix = self.policy_matrix
+    def sample_policy(self,transition_matrix,steps):
+        if(not np.isnan(transition_matrix).any()):
             state_index = self.initial_state
             state_hist = [state_index]
             for iteration in range(steps):
@@ -205,7 +224,7 @@ class Maze:
             print("no policy yet")
             return
     
-    def make_animation(self,steps):
+    def make_animation(self,transition_matrix,steps):
         empty_tile = np.zeros((8,8))
         wall_tile = np.ones((8,8))
         fire_tile = np.array([[0,0,0,0,0,0,0,0],
@@ -234,7 +253,7 @@ class Maze:
                                 [0,0,1,0,1,0,0,0]])*4
         symbol_to_tile = dict(zip(['B','W','F','G','S'],[empty_tile,wall_tile,fire_tile,gold_tile,empty_tile]))
     
-        states = self.sample_policy(steps)
+        states = self.sample_policy(transition_matrix,steps)
         world = self.world
         state_map = self.state_map
         
@@ -267,5 +286,4 @@ class Maze:
         html = HTML(anim.to_jshtml())
         display(html)
         plt.close()
-
 
