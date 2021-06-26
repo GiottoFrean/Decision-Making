@@ -13,14 +13,12 @@ class Maze:
         cols = world.shape[1]
         all_possible_positions = []
         starting_position = []
-        state_map = np.ones_like(world).astype(int)*-1
         gold_states = []
         index = 0
         for row in range(rows):
             for col in range(cols):
                 if(not world[row,col]=='W'):
                     all_possible_positions.append([row,col])
-                    state_map[row,col]=index
                     if(world[row,col]=='S'):
                         starting_position = [row,col]
                     if(world[row,col]=='G'):
@@ -149,12 +147,23 @@ class Maze:
         self.right_transition_matrix = right_transition_matrix
         self.up_transition_matrix = up_transition_matrix
         self.down_transition_matrix = down_transition_matrix
-        self.state_map = state_map
+        self.num_states = index
         self.world = world
-        self.policy_matrix = np.nan
         self.initial_state = get_position_index(starting_position)
+    
+    def show_on_map_str(self,values=[], set_W_blank=True):
+        index = 0
+        array = self.world.copy().astype('U256')
+        size = 4
+        if(len(values)>0):
+            size = max(4,max([len(str(v)) for v in values])+1)
+        if(len(values)>0):
+            for row in range(array.shape[0]):
+                for col in range(array.shape[1]):
+                    if(not array[row,col]=='W'):
+                        array[row,col] = str(values[index])
+                        index+=1
         
-    def print_to_size(array,size):
         last_row_sizes = np.array([len(v) for v in array[:,-1]])
         max_last_row_size = np.max(last_row_sizes)
         all_rows_str = ""
@@ -168,21 +177,25 @@ class Maze:
                 gap = size
                 if(e==len(row)-1):
                     gap=max_last_row_size
-                element_str = str(row[e])
-                dif = gap-len(element_str)
-                element_str = "".join([element_str]+[" " for space in range(dif)])
+                element = row[e]
+                dif = gap-len(element)
+                element_str = "".join([element]+[" " for space in range(dif)])
                 row_str=row_str+element_str
             if(r<array.shape[0]-1):
                 row_str=row_str+" ] \n"
             else:
                 row_str=row_str+" ]]"
             all_rows_str=all_rows_str+row_str
+        if(set_W_blank):
+            all_rows_str = all_rows_str.replace("W"," ")
         return all_rows_str
     
+    def show_on_map(self,values=[], set_W_blank=True):
+        print(self.show_on_map_str(values,set_W_blank))
+    
     def __repr__(self):
-        size = len(str(np.max(self.state_map)))+1
-        world_str = Maze.print_to_size(self.world.astype(str),size)
-        state_str = Maze.print_to_size(np.char.replace(self.state_map.astype(str),"-1","W"),size).replace("W"," ")
+        world_str = self.show_on_map_str(set_W_blank=False)
+        state_str = self.show_on_map_str(np.arange(self.num_states))
         return world_str + " world map" "\n" + state_str + " state map"
     
     def get_policy_matrix(self,policy_vals):        
@@ -198,18 +211,8 @@ class Maze:
             if(state_p_policy=='R'):
                 policy_matrix[:,p]=self.right_transition_matrix[:,p]        
         
-        policy_map = self.world.copy()
-        for row in range(policy_map.shape[0]):
-            for col in range(policy_map.shape[1]):
-                if(self.state_map[row,col]!=-1):
-                    policy_map[row,col] = policy_vals[self.state_map[row,col]]
-                else:
-                    policy_map[row,col] = "W"
-        
-        size = len(str(np.max(self.state_map)))+1
-        policy_map_str = Maze.print_to_size(policy_map.astype(str),size)
-        policy_map_str = policy_map_str.replace("W"," ")
-        print(policy_map_str+" policy map")
+        policy_map = self.show_on_map_str(policy_vals)
+        print(policy_map+" policy map")
         return policy_matrix
     
     def sample_policy(self,transition_matrix,steps):
@@ -255,18 +258,20 @@ class Maze:
     
         states = self.sample_policy(transition_matrix,steps)
         world = self.world
-        state_map = self.state_map
         
         images = []
         for i in range(len(states)):
             state = states[i]
             image = np.zeros((world.shape[0]*8,world.shape[1]*8))
+            index = 0
             for row in range(world.shape[0]):
                 for col in range(world.shape[1]):
                     tile = symbol_to_tile[world[row,col]]
                     image[row*8:(row+1)*8,col*8:(col+1)*8]=tile
-                    if(state_map[row,col]==state):
-                        image[row*8:(row+1)*8,col*8:(col+1)*8][person_tile>0]=person_tile[person_tile>0]
+                    if(not world[row,col]=='W'):
+                        if(index==state):
+                            image[row*8:(row+1)*8,col*8:(col+1)*8][person_tile>0]=person_tile[person_tile>0]
+                        index+=1
             images.append(image)
         
         fig = plt.figure(figsize=(world.shape[1]/2,world.shape[0]/2))
