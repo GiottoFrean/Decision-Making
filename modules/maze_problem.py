@@ -211,8 +211,6 @@ class Maze:
             if(state_p_policy=='R'):
                 policy_matrix[:,p]=self.right_transition_matrix[:,p]        
         
-        policy_map = self.show_on_map_str(policy_vals)
-        print(policy_map+" policy map")
         return policy_matrix
     
     def sample_policy(self,transition_matrix,steps):
