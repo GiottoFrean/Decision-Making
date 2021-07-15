@@ -8,7 +8,9 @@ rc('animation', html='html5')
 
 
 class Maze:
-    def __init__(self,world):
+    def __init__(self,world,prob_correct_step):
+        prob_correct_step
+        prob_misstep = (1.0-prob_correct_step)/2
         rows = world.shape[0]
         cols = world.shape[1]
         all_possible_positions = []
@@ -41,23 +43,23 @@ class Maze:
             left_pos = [pos[0],pos[1]-1]
             left_move_index = get_position_index(left_pos)
             if left_move_index==None:
-                left_transition_matrix[i,i]+=0.7
+                left_transition_matrix[i,i]+=prob_correct_step
             else:
-                left_transition_matrix[left_move_index,i]+=0.7
+                left_transition_matrix[left_move_index,i]+=prob_correct_step
             
             up_pos = [pos[0]-1,pos[1]]
             up_move_index = get_position_index(up_pos)
             if up_move_index==None:
-                left_transition_matrix[i,i]+=0.15
+                left_transition_matrix[i,i]+=prob_misstep
             else:
-                left_transition_matrix[up_move_index,i]+=0.15
+                left_transition_matrix[up_move_index,i]+=prob_misstep
             
             down_pos = [pos[0]+1,pos[1]]
             down_move_index = get_position_index(down_pos)
             if down_move_index==None:
-                left_transition_matrix[i,i]+=0.15
+                left_transition_matrix[i,i]+=prob_misstep
             else:
-                left_transition_matrix[down_move_index,i]+=0.15
+                left_transition_matrix[down_move_index,i]+=prob_misstep
         
         right_transition_matrix = np.zeros((number_of_states,number_of_states))
         for i in range(number_of_states):
@@ -66,23 +68,23 @@ class Maze:
             right_pos = [pos[0],pos[1]+1]
             right_move_index = get_position_index(right_pos)
             if right_move_index==None:
-                right_transition_matrix[i,i]+=0.7
+                right_transition_matrix[i,i]+=prob_correct_step
             else:
-                right_transition_matrix[right_move_index,i]+=0.7
+                right_transition_matrix[right_move_index,i]+=prob_correct_step
             
             up_pos = [pos[0]-1,pos[1]]
             up_move_index = get_position_index(up_pos)
             if up_move_index==None:
-                right_transition_matrix[i,i]+=0.15
+                right_transition_matrix[i,i]+=prob_misstep
             else:
-                right_transition_matrix[up_move_index,i]+=0.15
+                right_transition_matrix[up_move_index,i]+=prob_misstep
             
             down_pos = [pos[0]+1,pos[1]]
             down_move_index = get_position_index(down_pos)
             if down_move_index==None:
-                right_transition_matrix[i,i]+=0.15
+                right_transition_matrix[i,i]+=prob_misstep
             else:
-                right_transition_matrix[down_move_index,i]+=0.15
+                right_transition_matrix[down_move_index,i]+=prob_misstep
         
         down_transition_matrix = np.zeros((number_of_states,number_of_states))
         for i in range(number_of_states):
@@ -91,23 +93,23 @@ class Maze:
             down_pos = [pos[0]+1,pos[1]]
             down_move_index = get_position_index(down_pos)
             if down_move_index==None:
-                down_transition_matrix[i,i]+=0.7
+                down_transition_matrix[i,i]+=prob_correct_step
             else:
-                down_transition_matrix[down_move_index,i]+=0.7
+                down_transition_matrix[down_move_index,i]+=prob_correct_step
             
             right_pos = [pos[0],pos[1]+1]
             right_move_index = get_position_index(right_pos)
             if right_move_index==None:
-                down_transition_matrix[i,i]+=0.15
+                down_transition_matrix[i,i]+=prob_misstep
             else:
-                down_transition_matrix[right_move_index,i]+=0.15
+                down_transition_matrix[right_move_index,i]+=prob_misstep
             
             left_pos = [pos[0],pos[1]-1]
             left_move_index = get_position_index(left_pos)
             if left_move_index==None:
-                down_transition_matrix[i,i]+=0.15
+                down_transition_matrix[i,i]+=prob_misstep
             else:
-                down_transition_matrix[left_move_index,i]+=0.15
+                down_transition_matrix[left_move_index,i]+=prob_misstep
         
         up_transition_matrix = np.zeros((number_of_states,number_of_states))
         for i in range(number_of_states):
@@ -116,23 +118,23 @@ class Maze:
             up_pos = [pos[0]-1,pos[1]]
             up_move_index = get_position_index(up_pos)
             if up_move_index==None:
-                up_transition_matrix[i,i]+=0.7
+                up_transition_matrix[i,i]+=prob_correct_step
             else:
-                up_transition_matrix[up_move_index,i]+=0.7
+                up_transition_matrix[up_move_index,i]+=prob_correct_step
             
             right_pos = [pos[0],pos[1]+1]
             right_move_index = get_position_index(right_pos)
             if right_move_index==None:
-                up_transition_matrix[i,i]+=0.15
+                up_transition_matrix[i,i]+=prob_misstep
             else:
-                up_transition_matrix[right_move_index,i]+=0.15
+                up_transition_matrix[right_move_index,i]+=prob_misstep
             
             left_pos = [pos[0],pos[1]-1]
             left_move_index = get_position_index(left_pos)
             if left_move_index==None:
-                up_transition_matrix[i,i]+=0.15
+                up_transition_matrix[i,i]+=prob_misstep
             else:
-                up_transition_matrix[left_move_index,i]+=0.15
+                up_transition_matrix[left_move_index,i]+=prob_misstep
             
         left_transition_matrix[:,gold_states]=0
         left_transition_matrix[initial_state,gold_states]=1
@@ -150,6 +152,15 @@ class Maze:
         self.num_states = index
         self.world = world
         self.initial_state = get_position_index(starting_position)
+    
+    def get_reward(self,world_to_dict):
+        index = 0
+        reward = []
+        for row in range(self.world.shape[0]):
+            for col in range(self.world.shape[1]):
+                if(not self.world[row,col]=='W'):
+                    reward.append(world_to_dict[self.world[row,col]])
+        return np.array(reward)
     
     def show_on_map_str(self,values=[], set_W_blank=True):
         index = 0
