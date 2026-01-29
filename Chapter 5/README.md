@@ -1,6 +1,6 @@
 # Structure Learning
 
-Beyond learning parameters, we can learn the **structure** of the graphical model itself, i.e., which variables depend on which others.
+Beyond learning parameters, we can learn the structure of the graphical model itself, i.e., which variables depend on which others.
 
 ---
 

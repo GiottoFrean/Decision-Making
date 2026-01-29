@@ -1,4 +1,4 @@
-# Decision Making Under Uncertainty
+# Decision-Making
 
 This repository contains my interactive Jupyter notebooks covering content from the book "Algorithms for Decision Making" by Mykel J. Kochenderfer, Tim A. Wheeler, and Kyle H. Wray.
 
@@ -213,7 +213,7 @@ The algorithm is guaranteed to improve the likelihood at each iteration, though 
 
 ## Chapter 5
 
-Beyond learning parameters, we can learn the **structure** of the graphical model itself, i.e., which variables depend on which others.
+Beyond learning parameters, we can learn the structure of the graphical model itself, i.e., which variables depend on which others.
 
 ---
 
@@ -279,7 +279,7 @@ Policy iteration is guaranteed to converge to the optimal policy in finite itera
 
 **Value iteration** is an alternative that combines evaluation and improvement in one step.
 
-Start with arbitrary values (e.g., all zeros), and iterate until convergence. The Bellman update is a **contraction mapping** that's guaranteed to converge to the optimal values, then we extract the optimal policy by being greedy.
+Start with arbitrary values (e.g., all zeros), and iterate until convergence. The Bellman update is a contraction mapping that's guaranteed to converge to the optimal values, then we extract the optimal policy by being greedy.
 
 Comparison to policy iteration:
 - Value iteration: Simpler, one operation per iteration

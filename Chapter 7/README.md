@@ -32,7 +32,7 @@ Policy iteration is guaranteed to converge to the optimal policy in finite itera
 
 **Value iteration** is an alternative that combines evaluation and improvement in one step.
 
-Start with arbitrary values (e.g., all zeros), and iterate until convergence. The Bellman update is a **contraction mapping** that's guaranteed to converge to the optimal values, then we extract the optimal policy by being greedy.
+Start with arbitrary values (e.g., all zeros), and iterate until convergence. The Bellman update is a contraction mapping that's guaranteed to converge to the optimal values, then we extract the optimal policy by being greedy.
 
 Comparison to policy iteration:
 - Value iteration: Simpler, one operation per iteration
