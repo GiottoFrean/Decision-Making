@@ -2,3 +2,5 @@
 .ipynb_checkpoints/
 */__pycache__/
 *.html
+extract_notebook_images.py
+make_full_readme.py

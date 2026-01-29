@@ -1,6 +1,6 @@
 # Inference
 
-Once we have a probabilistic model, we need **inference** - computing probability distributions over variables of interest. This chapter explores both exact and approximate inference methods.
+Inference is about computing probabilities given what we know.
 
 ---
 
@@ -15,60 +15,28 @@ We condition on known variables and marginalize out the unknowns. With factors, 
 2. Marginalize out irrelevant variables (sum over their values)
 3. Normalize the result
 
-The **sum-product variable elimination** algorithm avoids building the full joint table by carefully ordering operations on factors. This exploits the graph structure, making inference tractable even when the full joint would be impossibly large.
-
-The notebook demonstrates this with a simple example: deciding whether to buy tea on the way home based on who's at home.
+The **sum-product variable elimination** algorithm avoids building the full joint table by carefully ordering operations on factors. This exploits the conditional independence structure.
 
 ---
 
 ## 2 - Inference, Integration with Samples
 
-When exact inference is intractable, we can use **Monte Carlo methods** - using samples to approximate integrals and expectations.
+In many cases we want to calculate an integral of a continuous function. When exact inference is intractable, we can use sampling methods.
 
-The basic Monte Carlo formula approximates an expectation:
-$$E[f(x)] \approx \frac{1}{N}\sum_{i=1}^N f(x_i) \text{ where } x_i \sim p(x)$$
+The basic **Monte Carlo** formula approximates with:
+$$\int f(x)p(x) dx \approx \frac{1}{N}\sum_{n=1}^N f(x_n)$$
 
-<p align="center">
-  <img src="../images/Chapter 3/2, Inference, Integration with samples_cell9_img1.png" alt="Monte Carlo convergence" width="500"/>
-</p>
-<p align="center"><em>Monte Carlo estimates converge to the true value as sample size increases.</em></p>
-
-**Importance sampling** handles cases where we can't sample directly from the target distribution. We sample from a proposal distribution q(x) and reweight:
+**Importance sampling** handles cases where we can't sample directly from the distribution. We sample from a proposal distribution q(x) and reweight:
 
 $$E_p[f(x)] \approx \sum_{i=1}^N w_i f(x_i) \text{ where } x_i \sim q(x), \; w_i = \frac{p(x_i)}{q(x_i)}$$
 
 This is particularly useful when we only know an unnormalized version of p(x).
 
-<p align="center">
-  <img src="../images/Chapter 3/2, Inference, Integration with samples_cell19_img1.png" alt="Importance sampling" width="500"/>
-</p>
-
 ---
 
 ## 3 - Sampling Factors
 
-This notebook covers algorithms for drawing samples from Bayesian networks:
-
-**Direct sampling** (top-down sampling):
-- Sample each variable in topological order conditioned on its parents
-- Simple but can't incorporate evidence
-
-**Rejection sampling**:
-- Generate samples from the joint, discard those inconsistent with evidence
-- Correct but wasteful when evidence is unlikely
-
-**Likelihood weighting**:
-- Sample non-evidence variables, fix evidence variables
-- Weight each sample by the probability of the evidence
-- More efficient than rejection sampling
-
-**Gibbs sampling** (MCMC):
-- Initialize all variables
-- Repeatedly sample each variable conditioned on all others
-- After burn-in, samples approximate the joint distribution
-- Works even with evidence
-
-Each method trades off simplicity, efficiency, and applicability.
+This notebook covers algorithms for drawing samples from Bayesian networks, such as **rejection sampling**, **likelihood weighting**, and **Gibbs sampling**.
 
 ---
 
@@ -76,20 +44,9 @@ Each method trades off simplicity, efficiency, and applicability.
 
 Gaussians have special properties that make inference tractable in closed form.
 
-**Marginalization** is trivial - just extract the relevant dimensions:
-
-<p align="center">
-  <img src="../images/Chapter 3/4, Inference with Gaussians_cell5_img1.png" alt="Marginalizing Gaussians" width="400"/>
-</p>
-
-**Conditioning** uses a simple formula. If we partition variables into observed (a) and unobserved (b):
-
-$$p(x_b | x_a) = \mathcal{N}(\mu_{b|a}, \Sigma_{b|a})$$
+<div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
+  <img src="../images/Chapter 3/4, Inference with Gaussians_cell5_img1.png" alt="Original Gaussian" width="400"/>
+  <img src="../images/Chapter 3/4, Inference with Gaussians_cell7_img1.png" alt="Conditioned Gaussian" width="400"/>
+</div>
 
 where the conditional mean and covariance have closed-form expressions.
-
-<p align="center">
-  <img src="../images/Chapter 3/4, Inference with Gaussians_cell10_img1.png" alt="Conditioning Gaussians" width="400"/>
-</p>
-
-This makes **linear Gaussian models** extremely powerful - we can do exact inference efficiently even in high dimensions. This is the foundation for algorithms like Kalman filtering.
