@@ -26,11 +26,7 @@ In many cases we want to calculate an integral of a continuous function. When ex
 The basic **Monte Carlo** formula approximates with:
 $$\int f(x)p(x) dx \approx \frac{1}{N}\sum_{n=1}^N f(x_n)$$
 
-**Importance sampling** handles cases where we can't sample directly from the distribution. We sample from a proposal distribution q(x) and reweight:
-
-$$E_p[f(x)] \approx \sum_{i=1}^N w_i f(x_i) \text{ where } x_i \sim q(x), \; w_i = \frac{p(x_i)}{q(x_i)}$$
-
-This is particularly useful when we only know an unnormalized version of p(x).
+**Importance sampling** handles cases where we can't sample directly from the distribution. We sample from a proposal distribution q(x) and reweight. This is particularly useful when we only know an unnormalized version of p(x).
 
 ---
 
@@ -49,4 +45,4 @@ Gaussians have special properties that make inference tractable in closed form.
   <img src="../images/Chapter 3/4, Inference with Gaussians_cell7_img1.png" alt="Conditioned Gaussian" width="400"/>
 </div>
 
-where the conditional mean and covariance have closed-form expressions.
+The conditional mean and covariance have closed-form expressions.

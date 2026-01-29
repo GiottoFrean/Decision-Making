@@ -1,28 +1,14 @@
 # Learning
 
-So far we've assumed we know the parameters of our probability distributions. This chapter covers how to **learn** parameters from data.
+This chapter covers how to learn model parameters from data.
 
 ---
 
 ## 1 - Maximum Likelihood Estimate
 
-The Maximum Likelihood Estimate (MLE) chooses parameters that maximize the probability of the observed data:
+The Maximum Likelihood Estimate (MLE) chooses parameters that maximize the probability of the observed data.
 
-$$\theta_{\text{MLE}} = \arg\max_\theta P(D|\theta)$$
-
-Assuming independent samples, we maximize the product (or equivalently, the sum of log probabilities):
-
-$$\theta_{\text{MLE}} = \arg\max_\theta \sum_{i=1}^N \log P(D_i|\theta)$$
-
-**Examples:**
-
-For a **Bernoulli distribution** (coin flips), the MLE is simply the sample mean:
-$$\theta_{\text{MLE}} = \frac{k}{n}$$
-
-For a **Gaussian**, the MLE estimates are:
-$$\mu_{\text{MLE}} = \frac{1}{N}\sum_{i=1}^N x_i, \quad \sigma^2_{\text{MLE}} = \frac{1}{N}\sum_{i=1}^N (x_i - \mu)^2$$
-
-For **Bayesian networks**, we can estimate each conditional probability table independently by counting frequencies in the data.
+For a **Bernoulli distribution** (coin flips), the MLE is simply the sample mean. For a **Gaussian**, it's the sample mean and variance. For **Bayesian networks**, we can estimate each conditional probability table independently by counting frequencies in the data.
 
 MLE is simple and works well with lots of data, but can overfit with small datasets and doesn't quantify uncertainty in the parameters.
 
@@ -30,11 +16,7 @@ MLE is simple and works well with lots of data, but can overfit with small datas
 
 ## 2 - Bayesian Parameter Learning
 
-Rather than picking a single "best" parameter, Bayesian learning maintains a full distribution over parameters:
-
-$$P(\theta|D) = \frac{P(D|\theta)P(\theta)}{P(D)}$$
-
-We start with a **prior** P(θ) encoding our beliefs, then update to a **posterior** P(θ|D) after seeing data.
+Rather than picking a single "best" parameter, Bayesian learning maintains a full distribution over parameters. We start with a **prior** encoding our beliefs, then update to a **posterior** after seeing data.
 
 **Conjugate priors** make this tractable. For a Bernoulli likelihood, the **Beta distribution** is conjugate:
 
@@ -58,21 +40,14 @@ For categorical data, the **Dirichlet distribution** is the multi-dimensional an
 $$\theta_{\text{MAP}} = \arg\max_\theta P(\theta|D)$$
 
 This is a compromise between full Bayesian inference and MLE, often used for computational efficiency.
-
----
-
-## 3 - Non-Parametric Models
+. ## 3 - Non-Parametric Models
 
 Parametric models assume data comes from a specific family (Gaussian, etc.). **Non-parametric models** are more flexible.
 
 **Kernel Density Estimation (KDE)** places a kernel function (e.g., Gaussian) at each data point:
 
 $$p(x) = \frac{1}{N}\sum_{i=1}^N K_\sigma(x - x_i)$$
-
-The bandwidth σ controls smoothness:
-
-<p align="center">
-  <img src="../images/Chapter 4/3, Non-Parametric Models_cell5_img1.png" alt="KDE small bandwidth" width="300"/>
+. The bandwidthimages/Chapter 4/3, Non-Parametric Models_cell5_img1.png" alt="KDE small bandwidth" width="300"/>
   <img src="../images/Chapter 4/3, Non-Parametric Models_cell5_img2.png" alt="KDE medium bandwidth" width="300"/>
   <img src="../images/Chapter 4/3, Non-Parametric Models_cell5_img3.png" alt="KDE large bandwidth" width="300"/>
 </p>
@@ -96,7 +71,7 @@ Real datasets often have missing values. Several strategies exist:
 
 <p align="center">
   <img src="../images/Chapter 4/4, Learning With Missing Data_cell5_img1.png" alt="Original data" width="350"/>
-  <img src="../images/Chapter 4/4, Learning With Missing Data_cell7_img1.png" alt="Model-based imputation" width="350"/>
+  <img src="../images/Chapter 4/4, Learning With Missing Data_cell11_img1.png" alt="Model-based imputation" width="350"/>
 </p>
 
 **K-nearest neighbors:**
@@ -104,8 +79,10 @@ Real datasets often have missing values. Several strategies exist:
 - Works well when similar examples exist
 
 <p align="center">
-  <img src="../images/Chapter 4/4, Learning With Missing Data_cell14_img1.png" alt="KNN imputation" width="400"/>
+  <img src="../images/Chapter 4/4, Learning With Missing Data_cell5_img1.png" alt="Original data" width="350"/>
+  <img src="../images/Chapter 4/4, Learning With Missing Data_cell14_img1.png" alt="Model-based imputation" width="350"/>
 </p>
+
 
 **Full Bayesian approach:**
 - Treat missing values as latent variables and integrate them out
