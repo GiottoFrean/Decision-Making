@@ -6,7 +6,7 @@ This chapter covers the basics of probability theory.
 
 ## 1 - Rules of Probability, Factors and Graphs
 
-This notebook introduces the Kolmogorov axioms and fundamental probability laws, then shows how to represent probability distributions as **factors**.
+This notebook introduces the Kolmogorov axioms and fundamental probability laws, then shows how to represent probability distributions as factors.
 
 The notebook covers:
 - **Factor operations**: conditioning, marginalization, multiplication
@@ -19,7 +19,7 @@ The notebook covers:
 
 This notebook catalogs some important distributions for machine learning and decision theory.
 
-**Discrete distributions:**
+Discrete distributions:
 - **Bernoulli/Binomial**: Binary outcomes (coin flips)
 
 <p align="center">
@@ -28,7 +28,7 @@ This notebook catalogs some important distributions for machine learning and dec
 
 - **Categorical/Multinomial**: Multiple discrete outcomes (dice rolls)
 
-**Continuous distributions:**
+Continuous distributions:
 - **Uniform**: Constant probability over an interval
 - **Gaussian**: The ubiquitous bell curve
 
@@ -36,6 +36,6 @@ This notebook catalogs some important distributions for machine learning and dec
   <img src="../images/Chapter 2/2, common distributions_cell12_img1.png" alt="Gaussian distribution" width="400"/>
 </p>
 
-**Advanced models:**
+Advanced models:
 - **Mixture of Gaussians**: Combines multiple Gaussian components, useful for multimodal data
 - **Linear Gaussian models**: Where means depend linearly on parent variables, enabling tractable inference
